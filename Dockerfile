@@ -7,11 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -U pip
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
 
-CMD ["python3", "-m", "AloneMusic"]
+RUN pip install -U pip uv
+RUN uv pip install --system .
+
+CMD ["AloneMusic"]
