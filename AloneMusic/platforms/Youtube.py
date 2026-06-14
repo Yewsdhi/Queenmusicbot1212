@@ -1,23 +1,25 @@
-import asyncio
 import os
 import re
 from typing import Union
+
+import aiohttp
 import yt_dlp
+from py_yt import Playlist, VideosSearch
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from py_yt import VideosSearch, Playlist
-import aiohttp
 
 API_URL = os.environ.get("SHRUTI_API_URL", "https://api.shrutibots.site")
 
-API_KEY = os.environ.get("SHRUTI_API_KEY", "ShrutiBotsAlSpfeG7JItQmuoxCqKd") ## Get This API KEY FROM TELEGRAM BOT USERNAME: @SHRUTIAPIBOT 
+API_KEY = os.environ.get(
+    "SHRUTI_API_KEY", "ShrutiBotsAlSpfeG7JItQmuoxCqKd"
+)  ## Get This API KEY FROM TELEGRAM BOT USERNAME: @SHRUTIAPIBOT
 
 DOWNLOAD_DIR = "downloads"
 
 
 def time_to_seconds(time):
     stringt = str(time)
-    return sum(int(x) * 60 ** i for i, x in enumerate(reversed(stringt.split(":"))))
+    return sum(int(x) * 60**i for i, x in enumerate(reversed(stringt.split(":"))))
 
 
 async def download_song(link: str) -> str:
@@ -35,7 +37,7 @@ async def download_song(link: str) -> str:
             async with session.get(
                 f"{API_URL}/download",
                 params={"url": video_id, "type": "audio", "api_key": API_KEY},
-                timeout=aiohttp.ClientTimeout(total=300)
+                timeout=aiohttp.ClientTimeout(total=300),
             ) as resp:
                 if resp.status != 200:
                     return None
@@ -69,7 +71,7 @@ async def download_video(link: str) -> str:
             async with session.get(
                 f"{API_URL}/download",
                 params={"url": video_id, "type": "video", "api_key": API_KEY},
-                timeout=aiohttp.ClientTimeout(total=600)
+                timeout=aiohttp.ClientTimeout(total=600),
             ) as resp:
                 if resp.status != 200:
                     return None
@@ -110,7 +112,7 @@ class YouTubeAPI:
                 for entity in message.entities:
                     if entity.type == MessageEntityType.URL:
                         text = message.text or message.caption
-                        return text[entity.offset: entity.offset + entity.length]
+                        return text[entity.offset : entity.offset + entity.length]
             elif message.caption_entities:
                 for entity in message.caption_entities:
                     if entity.type == MessageEntityType.TEXT_LINK:
@@ -239,7 +241,9 @@ class YouTubeAPI:
                     continue
         return formats_available, link
 
-    async def slider(self, link: str, query_type: int, videoid: Union[bool, str] = None):
+    async def slider(
+        self, link: str, query_type: int, videoid: Union[bool, str] = None
+    ):
         if videoid:
             link = self.base + link
         if "&" in link:
